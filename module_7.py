@@ -239,7 +239,7 @@ def exec_waypoint_nav_demo(args):
     """ Executes waypoint navigation demo.
     """
 
-    with make_carla_client(args.host, args.port) as client:
+    with make_carla_client(args.host, args.port, timeout=120.0) as client:
         print('Carla client connected.')
 
         settings = make_carla_settings(args)

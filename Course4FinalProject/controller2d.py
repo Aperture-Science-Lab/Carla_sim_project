@@ -132,11 +132,13 @@ class Controller2D(object):
         # Skip the first frame to store previous values properly
         if self._start_control_loop:
 
+            dt = t - self.vars.t_prev
+            if dt < 1e-6:
+                dt = 1e-6
+
             self.vars.v_error           = v_desired - v
-            self.vars.v_error_integral += self.vars.v_error * \
-                                          (t - self.vars.t_prev)
-            v_error_rate_of_change      = (self.vars.v_error - self.vars.v_error_prev) /\
-                                          (t - self.vars.t_prev)
+            self.vars.v_error_integral += self.vars.v_error * dt
+            v_error_rate_of_change      = (self.vars.v_error - self.vars.v_error_prev) / dt
 
             # cap the integrator sum to a min/max
             self.vars.v_error_integral = \
@@ -160,7 +162,7 @@ class Controller2D(object):
             crosstrack_error = np.linalg.norm(crosstrack_vector)
 
             # set deadband to reduce oscillations
-            print(crosstrack_error)
+            # print(crosstrack_error)
             if crosstrack_error < self.vars.cross_track_deadband:
                 crosstrack_error = 0.0
 
@@ -196,14 +198,32 @@ class Controller2D(object):
 
             # Compute steering command based on error
             steer_output = heading_error + \
-                    np.arctan(self.vars.kp_heading * \
-                              crosstrack_sign * \
-                              crosstrack_error / \
-                              (v + self.vars.k_speed_crosstrack))
+                np.arctan(self.vars.kp_heading * \
+                        crosstrack_sign * \
+                        crosstrack_error / \
+                        (v + self.vars.k_speed_crosstrack + 1.0e-6))
+
+            # Override steer when fully stopped to prevent oscillation
+            if v_desired < 0.01 and v < 0.5:
+                steer_output = 0.0
 
             ######################################################
             # SET CONTROLS OUTPUT
             ######################################################
+
+            # SAFETY CHECK: Ensure no NaNs or Infs reach the set functions
+            import math
+            
+            # Check for NaN/Inf and replace with safe defaults
+            if math.isnan(throttle_output) or math.isinf(throttle_output):
+                throttle_output = 0.0
+            
+            if math.isnan(steer_output) or math.isinf(steer_output):
+                steer_output = 0.0
+            
+            if math.isnan(brake_output) or math.isinf(brake_output):
+                brake_output = 0.0
+
             self.set_throttle(throttle_output)  # in percent (0 to 1)
             self.set_steer(steer_output)        # in rad (-1.22 to 1.22)
             self.set_brake(brake_output)        # in percent (0 to 1)
@@ -214,4 +234,3 @@ class Controller2D(object):
         self.vars.v_prev       = v
         self.vars.v_error_prev = self.vars.v_error
         self.vars.t_prev       = t
-        
