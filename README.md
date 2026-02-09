@@ -6,20 +6,7 @@
 
 ## Video
 
-
-
 https://github.com/user-attachments/assets/b7c6cbcb-a2d5-47d1-82a9-56a157fbc036
-
-## Results
-<img width="300" height="200" alt="brake_output" src="https://github.com/user-attachments/assets/fe6ec92d-f18f-470c-b125-ca5d02738f1d" />
-
-
-## Overview<img width="300" height="200" alt="forward_speed" src="https://github.com/user-attachments/assets/dbddf968-5d53-4913-b436-bd785b4125b0" />
-
-<img width="300" height="200" alt="steer_output" src="https://github.com/user-attachments/assets/9766e522-97ae-4236-9e91-7f02b63fcca0" />
-<img width="300" height="200" alt="throttle_output" src="https://github.com/user-attachments/assets/a2d59fa9-8811-4863-b5de-f0e16de7ba49" />
-
-A hierarchical motion planner for autonomous vehicles in CARLA simulator. This implementation handles static/dynamic obstacles, traffic rules, and lane tracking as part of the Self-Driving Cars Specialization.
 
 ## Project Structure
 
